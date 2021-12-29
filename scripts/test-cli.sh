@@ -12,7 +12,7 @@ set -euo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 testVersion() {
-  local expected="1.0.0"
+  local expected="2.0.0"
   local output=$("${DIR}/../bin/slack-archiver" version 2>&1)
   assertEquals "unexpected output" "${expected}" "${output}"
 }

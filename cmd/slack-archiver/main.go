@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	SlackArchiverVersion = "1.0.0"
+	SlackArchiverVersion = "2.0.0"
 )
 
 const (
