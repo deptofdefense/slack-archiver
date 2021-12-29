@@ -505,7 +505,7 @@ func main() {
 						return fmt.Errorf("error creating directory for file %q from url %q: %w", f.ID, u.String(), mkdirAllError)
 					}
 
-					if fi, err := os.Stat(fullpath); err == nil {
+					if fi, statError := os.Stat(fullpath); statError == nil {
 						if !overwrite {
 							if fi.Size() == f.Size {
 								// if not overwriting and the sizes match, then skip
