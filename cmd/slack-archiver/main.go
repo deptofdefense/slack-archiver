@@ -32,6 +32,7 @@ const (
 const (
 	FlagSource      = "src"
 	FlagDestination = "dest"
+	FlagOverwrite   = "overwrite"
 	FlagVersion     = "version"
 )
 
@@ -43,6 +44,7 @@ func initListFlags(flag *pflag.FlagSet) {
 func initDownloadFilesFlags(flag *pflag.FlagSet) {
 	flag.String(FlagSource, "", "path to Slack zip file")
 	flag.String(FlagDestination, "", "path to where to download files")
+	flag.Bool(FlagOverwrite, false, "overwrite existing files")
 	flag.BoolP(FlagVersion, "v", false, "show version")
 }
 
@@ -364,6 +366,7 @@ func main() {
 
 			src := v.GetString(FlagSource)
 			dest := v.GetString(FlagDestination)
+			overwrite := v.GetBool(FlagOverwrite)
 
 			archive, err := slack.OpenArchive(src)
 			if err != nil {
@@ -481,9 +484,6 @@ func main() {
 						)
 					}
 
-					substr := strings.TrimPrefix(u.Path, "/files-pri/")
-					partitions := strings.SplitN(substr[0:strings.Index(substr, "/")], "-", 2)
-
 					filename := u.Path[strings.LastIndex(u.Path, "/")+1 : len(u.Path)]
 
 					created := time.Unix(int64(f.Created), 0)
@@ -491,17 +491,27 @@ func main() {
 
 					fullpath := filepath.Join(
 						dest,
-						fmt.Sprintf("team=%s", partitions[0]),
 						fmt.Sprintf("year=%d", createdYear),
 						fmt.Sprintf("month=%d", int(createdMonth)),
 						fmt.Sprintf("day=%d", createdDay),
-						fmt.Sprintf("id=%s", partitions[1]),
+						fmt.Sprintf("user=%s", f.User),
+						fmt.Sprintf("filetype=%s", f.FileType),
+						fmt.Sprintf("id=%s", f.ID),
 						filename,
 					)
 
 					mkdirAllError := os.MkdirAll(filepath.Dir(fullpath), 0775)
 					if err != nil {
 						return fmt.Errorf("error creating directory for file %q from url %q: %w", f.ID, u.String(), mkdirAllError)
+					}
+
+					if fi, err := os.Stat(fullpath); err == nil {
+						if !overwrite {
+							if fi.Size() == f.Size {
+								// if not overwriting and the sizes match, then skip
+								continue
+							}
+						}
 					}
 
 					resp, getError := client.Get(u.String())

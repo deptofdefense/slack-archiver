@@ -63,14 +63,13 @@ type MessageFile struct {
 	PrettyType         string `json:"pretty_type,omitempty"`
 	User               string `json:"user,omitempty"`
 	Editable           bool   `json:"editable,omitempty"`
-	Size               int    `json:"size,omitempty"`
+	Size               int64  `json:"size,omitempty"`
 	Mode               string `json:"mode"`
 	IsExternal         bool   `json:"is_external,omitempty"`
 	ExternalType       string `json:"external_type,omitempty"`
 	IsPublic           bool   `json:"is_public,omitempty"`
 	PublicURLShared    bool   `json:"public_url_shared,omitempty"`
 	DisplayAsBot       bool   `json:"display_as_bot,omitempty"`
-	Username           string `json:"username,omitempty"`
 	URLPrivate         string `json:"url_private,omitempty"`
 	URLPrivateDownload string `json:"url_private_download,omitempty"`
 	MediaDisplayType   string `json:"media_display_type,omitempty"`
